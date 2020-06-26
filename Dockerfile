@@ -17,6 +17,8 @@ RUN set -eux; \
 		php7-xmlwriter \
 		kitinerary \
 	; \
+	true "Versioning"; \
+	if [ -n "$VERSION_INFO" ]; then echo "$VERSION_INFO" >> /.VERSION_INFO; fi; \
 	rm -f /var/cache/apk/*
 
 # PHP-FPM config
