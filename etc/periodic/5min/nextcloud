@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd /var/www/html
+su -s /usr/bin/php7 www-data cron.php
