@@ -1,4 +1,10 @@
 #!/bin/bash
 
 cd /var/www/html
+
+# Run cron
 su -s /usr/bin/php7 www-data cron.php
+
+# Send activity emails
+su -s /usr/bin/php7 www-data occ activity:send-mails
+
