@@ -1,5 +1,5 @@
 #!/bin/bash
 
 cd /var/www/html
-exec su -s /usr/bin/php7 www-data -- ./occ "$@"
+exec su -s /usr/bin/php7 www-data -- occ "$@"
 

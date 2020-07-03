@@ -6,5 +6,7 @@ cd /var/www/html
 su -s /usr/bin/php7 www-data cron.php
 
 # Send activity emails
-su -s /usr/bin/php7 www-data occ activity:send-mails
+su -s /usr/bin/php7 www-data -- occ activity:send-mails
 
+# Send event reminders
+su -s /usr/bin/php7 www-data -- occ dav:send-event-reminders
