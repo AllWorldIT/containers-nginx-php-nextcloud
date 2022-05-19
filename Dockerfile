@@ -3,6 +3,8 @@ FROM registry.gitlab.iitsp.com/allworldit/docker/lempstack:latest
 ARG VERSION_INFO=
 LABEL maintainer="Nigel Kukard <nkukard@LBSD.net>"
 
+ENV PHP_NAME=php8
+
 RUN set -eux; \
 	true "Redis"; \
 	apk add --no-cache \
@@ -10,11 +12,11 @@ RUN set -eux; \
 	; \
 	true "NextCloud requirements"; \
 	apk add --no-cache \
-		php7-pcntl \
-		php7-gmp \
-		php7-pecl-redis \
-		php7-xmlreader \
-		php7-xmlwriter \
+		$PHP_NAME-pcntl \
+		$PHP_NAME-gmp \
+		$PHP_NAME-pecl-redis \
+		$PHP_NAME-xmlreader \
+		$PHP_NAME-xmlwriter \
 		kitinerary \
 	; \
 	true "Versioning"; \
@@ -22,15 +24,15 @@ RUN set -eux; \
 	rm -f /var/cache/apk/*
 
 # PHP-FPM config
-COPY etc/php7/conf.d/90-nextcloud.ini /etc/php7/conf.d/90-nextcloud.ini
+COPY etc/$PHP_NAME/conf.d/90-nextcloud.ini /etc/$PHP_NAME/conf.d/90-nextcloud.ini
 RUN set -eux; \
-	echo -e '\n\n; NextCloud\nenv[PATH] = /usr/bin:/bin' >> /etc/php7/php-fpm.d/www.conf
+	echo -e '\n\n; NextCloud\nenv[PATH] = /usr/bin:/bin' >> /etc/$PHP_NAME/php-fpm.d/www.conf
 RUN set -eux; \
 	ln -s ../lib/libexec/kf5/kitinerary-extractor /usr/bin/; \
 	chown root:root \
-		/etc/php7/conf.d/90-nextcloud.ini; \
+		/etc/$PHP_NAME/conf.d/90-nextcloud.ini; \
 	chmod 0644 \
-		/etc/php7/conf.d/90-nextcloud.ini
+		/etc/$PHP_NAME/conf.d/90-nextcloud.ini
 
 # Redis
 COPY etc/supervisor/conf.d/redis.conf /etc/supervisor/conf.d/redis.conf
