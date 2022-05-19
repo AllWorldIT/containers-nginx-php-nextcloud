@@ -12,7 +12,7 @@ RUN set -eux; \
 	apk add --no-cache \
 		php7-pcntl \
 		php7-gmp \
-		php7-redis \
+		php7-pecl-redis \
 		php7-xmlreader \
 		php7-xmlwriter \
 		kitinerary \
