@@ -3,7 +3,7 @@ FROM registry.gitlab.iitsp.com/allworldit/docker/lempstack:latest
 ARG VERSION_INFO=
 LABEL maintainer="Nigel Kukard <nkukard@LBSD.net>"
 
-ENV PHP_NAME=php8
+ENV PHP_NAME=php81
 
 RUN set -eux; \
 	true "Redis"; \
