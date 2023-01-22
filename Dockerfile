@@ -1,58 +1,77 @@
-FROM registry.gitlab.iitsp.com/allworldit/docker/lempstack:latest
+# Copyright (c) 2022-2023, AllWorldIT.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to
+# deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+# IN THE SOFTWARE.
+
+
+FROM registry.conarx.tech/containers/nginx-php/3.17
+
 
 ARG VERSION_INFO=
-LABEL maintainer="Nigel Kukard <nkukard@LBSD.net>"
+LABEL org.opencontainers.image.authors   = "Nigel Kukard <nkukard@conarx.tech>"
+LABEL org.opencontainers.image.version   = "3.17"
+LABEL org.opencontainers.image.base.name = "registry.conarx.tech/containers/nginx/3.17"
+
 
 ENV PHP_NAME=php81
 
+
 RUN set -eux; \
-	true "Redis"; \
-	apk add --no-cache \
-		redis \
-	; \
+	true "Check PHP version"; \
+	if [ ! -d "/etc/$PHP_NAME" ]; then echo "PHP needs updating, '/etc/$PHP_NAME' does not exist"; false; fi; \
 	true "NextCloud requirements"; \
 	apk add --no-cache \
-		$PHP_NAME-pcntl \
-		$PHP_NAME-gmp \
-		$PHP_NAME-pecl-redis \
-		$PHP_NAME-xmlreader \
-		$PHP_NAME-xmlwriter \
 		kitinerary \
 	; \
-	true "Versioning"; \
-	if [ -n "$VERSION_INFO" ]; then echo "$VERSION_INFO" >> /.VERSION_INFO; fi; \
+	mkdir /var/www/nextcloud-data; \
+	chown www-data:www-data \
+		/var/www/nextcloud-data; \
+	chmod 0755 \
+		/var/www/nextcloud-data; \
 	rm -f /var/cache/apk/*
 
+
 # PHP-FPM config
-COPY etc/$PHP_NAME/conf.d/90-nextcloud.ini /etc/$PHP_NAME/conf.d/90-nextcloud.ini
-RUN set -eux; \
-	echo -e '\n\n; NextCloud\nenv[PATH] = /usr/bin:/bin' >> /etc/$PHP_NAME/php-fpm.d/www.conf
+COPY etc/php/conf.d/30-fdc-nextcloud.ini /etc/$PHP_NAME/conf.d/30-fdc-nextcloud.ini
 RUN set -eux; \
 	ln -s ../lib/libexec/kf5/kitinerary-extractor /usr/bin/; \
 	chown root:root \
-		/etc/$PHP_NAME/conf.d/90-nextcloud.ini; \
+		/etc/$PHP_NAME/conf.d/30-fdc-nextcloud.ini; \
 	chmod 0644 \
-		/etc/$PHP_NAME/conf.d/90-nextcloud.ini
+		/etc/$PHP_NAME/conf.d/30-fdc-nextcloud.ini
 
-# Redis
-COPY etc/supervisor/conf.d/redis.conf /etc/supervisor/conf.d/redis.conf
-RUN set -eux; \
-	echo -e '\n\n# Docker\nlogfile /dev/stdout' >> /etc/redis.conf
-COPY tests.d/50-redis.sh /docker-entrypoint-tests.d/50-redis.sh
-RUN set -eux; \
-	chown root:root \
-		/etc/supervisor/conf.d/redis.conf; \
-	chmod 0644 \
-		/etc/supervisor/conf.d/redis.conf
 
 # NextCloud
+COPY etc/nginx/http.d/50_vhost_default.conf /etc/nginx/http.d
+COPY etc/cron.d/nextcloud /etc/cron.d
+COPY usr/local/bin/nextcloud-cron /usr/local/bin
 COPY usr/local/sbin/occ /usr/local/sbin/occ
-COPY etc/periodic/5min/nextcloud /etc/periodic/5min/nextcloud
+COPY usr/local/share/flexible-docker-containers/init.d/48-nginx-php-nextcloud.sh /usr/local/share/flexible-docker-containers/init.d
 RUN set -eux; \
+	true "Flexible Docker Containers"; \
+	if [ -n "$VERSION_INFO" ]; then echo "$VERSION_INFO" >> /.VERSION_INFO; fi; \
 	chown root:root \
 		/usr/local/sbin/occ \
-		/etc/periodic/5min/nextcloud; \
+		/etc/cron.d/nextcloud; \
 	chmod 0755 \
 		/usr/local/sbin/occ \
-		/etc/periodic/5min/nextcloud
+		/etc/cron.d/nextcloud; \
+	fdc set-perms
 
+
+VOLUME ["/var/www/nextcloud-data"]

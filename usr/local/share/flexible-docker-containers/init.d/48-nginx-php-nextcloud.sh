@@ -1,5 +1,4 @@
 #!/bin/bash
-#!/bin/bash
 # Copyright (c) 2022-2023, AllWorldIT.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,6 +20,7 @@
 # IN THE SOFTWARE.
 
 
-cd /var/www/html
+fdc_notice "Setting Nginx PHP Nextcloud permissions"
 
-exec su -s /usr/bin/php www-data -- occ "$@"
+chown www-data:www-data /var/www/nextcloud-data
+chmod 0755 /var/www/nextcloud-data

@@ -1,0 +1,2 @@
+# min   hour    day     month   weekday   user      command
+*/5     *       *       *       *         www-data  /usr/local/bin/nextcloud-cron
