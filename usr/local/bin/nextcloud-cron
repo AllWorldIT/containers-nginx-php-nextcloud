@@ -22,8 +22,8 @@
 
 # Make sure user is correct
 if [ "$USER" != "www-data" ]; then
-    echo "ERROR: $0 must be run as user www-data"
-    exit 1
+	echo "ERROR: $0 must be run as user www-data"
+	exit 1
 fi
 
 cd /var/www/html
