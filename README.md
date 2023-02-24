@@ -55,7 +55,7 @@ Additional environment variables are available from...
 * [Conarx Containers Nginx PHP image](https://gitlab.conarx.tech/containers/nginx-php)
 * [Conarx Containers Nginx image](https://gitlab.conarx.tech/containers/nginx)
 * [Conarx Containers Postfix image](https://gitlab.conarx.tech/containers/postfix)
-* [Conarx Containers Alpine image](https://gitlab.conarx.tech/containers/alpine).
+* [Conarx Containers Alpine image](https://gitlab.conarx.tech/containers/alpine)
 
 
 
@@ -248,7 +248,6 @@ services:
       - '8080:80'
       - '8025:25'
     environment:
-      START_POSTFIX: 'yes'
       POSTFIX_RELAYHOST: '[172.16.0.1]'
       POSTFIX_ROOT_ADDRESS: 'postmaster@example.com'
       POSTFIX_MYHOSTNAME: 'nextcloud.example.com'
@@ -258,7 +257,7 @@ services:
       # NextCloud data
       - ./data/nextcloud-data:/var/www/nextcloud-data
       # Nginx config
-      - ./config/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./config/nginx.conf:/etc/nginx/http.d/50_vhost_default.conf:ro
       # PHP ini customizations
       - ./config/php.ini:/etc/php8/conf.d/99-nextcloud.ini
       # PHP fpm config
@@ -278,6 +277,16 @@ services:
     volumes:
       # MariaDB data
       - ./data/mariadb:/var/lib/mysql
+    networks:
+      - internal
+
+  redis:
+    image: registry.conarx.tech/containers/redis
+    environment:
+      REDIS_PASSWORD: 'xxxx'
+    volumes:
+      # Redis data
+      - ./data/redis:/var/lib/redis
     networks:
       - internal
 ```

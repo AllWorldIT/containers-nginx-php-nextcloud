@@ -59,7 +59,7 @@ RUN set -eux; \
 # NextCloud
 COPY etc/nginx/http.d/50_vhost_default.conf /etc/nginx/http.d
 COPY etc/cron.d/nextcloud /etc/cron.d
-COPY usr/local/bin/nextcloud-cron /usr/local/bin
+COPY usr/local/sbin/nextcloud-cron /usr/local/sbin
 COPY usr/local/sbin/occ /usr/local/sbin/occ
 COPY usr/local/share/flexible-docker-containers/init.d/48-nginx-php-nextcloud.sh /usr/local/share/flexible-docker-containers/init.d
 RUN set -eux; \
