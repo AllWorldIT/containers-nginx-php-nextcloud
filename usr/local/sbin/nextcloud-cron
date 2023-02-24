@@ -21,8 +21,8 @@
 
 
 # Make sure user is correct
-if [ "$USER" != "www-data" ]; then
-	echo "ERROR: $0 must be run as user www-data"
+if [ "$USER" != "root" ]; then
+	echo "ERROR: $0 must be run as user root"
 	exit 1
 fi
 
@@ -32,7 +32,7 @@ cd /var/www/html
 su -s /usr/bin/php www-data cron.php
 
 # Send activity emails
-su -s /usr/bin/php www-data -- occ activity:send-mails
+/usr/local/sbin/occ activity:send-mails
 
 # Send event reminders
-su -s /usr/bin/php www-data -- occ dav:send-event-reminders
+/usr/local/sbin/occ dav:send-event-reminders
