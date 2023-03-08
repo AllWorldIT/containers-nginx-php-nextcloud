@@ -21,6 +21,7 @@
 # IN THE SOFTWARE.
 
 
+# shellcheck disable=SC2164
 cd /var/www/html
 
 exec su -s /usr/bin/php www-data -- occ "$@"
