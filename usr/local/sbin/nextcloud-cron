@@ -26,6 +26,7 @@ if [ "$EUID" != "0" ]; then
 	exit 1
 fi
 
+# shellcheck disable=SC2164
 cd /var/www/html
 
 # Run cron
