@@ -1,0 +1,145 @@
+# Copyright (c) 2022-2023, AllWorldIT.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to
+# deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+# IN THE SOFTWARE.
+
+
+server {
+	listen [::]:80 ipv6only=off default_server;
+	server_name _;
+
+	root /var/www/html;
+	index index.php;
+
+	# Client limits
+	client_max_body_size 8192M;
+
+	location = /favicon.ico {
+		log_not_found off;
+		access_log off;
+	}
+
+	location = /robots.txt {
+		allow all;
+		log_not_found off;
+		access_log off;
+	}
+
+	location ~ ^\/(?:AUTHORS|COPYING)$ {
+		deny all;
+	}
+
+	location ~* \.user\.ini {
+		deny all;
+	}
+
+	location ~ ^\/\.(?:ht|cache|rnd) {
+		deny all;
+	}
+
+	location ~ ^\/(?:build|tests|config|lib|3rdparty|templates|data)\/ {
+		deny all;
+	}
+	location ~ ^\/(?:\.|autotest|occ|issue|indie|db_|console) {
+		deny all;
+	}
+
+	location / {
+		rewrite ^ /index.php;
+	}
+
+	location ^~ /.well-known {
+		# NK: The rules in this block are an adaptation of the rules
+		# in the Nextcloud `.htaccess` that concern `/.well-known`.
+
+		location = /.well-known/carddav { return 301 /remote.php/dav/; }
+		location = /.well-known/caldav  { return 301 /remote.php/dav/; }
+
+		location /.well-known/acme-challenge { try_files $uri $uri/ =404; }
+		location /.well-known/pki-validation { try_files $uri $uri/ =404; }
+
+		# NK: Let Nextcloud's API for `/.well-known` URIs handle all other
+		# requests by passing them to the front-end controller.
+		return 301 /index.php$request_uri;
+	}
+
+	## NK: https://docs.nextcloud.com/server/19/admin_manual/installation/nginx.html
+	location ~ ^\/(?:index|remote|public|cron|core\/ajax\/update|status|ocs\/v[12]|updater\/.+|oc[ms]-provider\/.+|.+\/richdocumentscode\/proxy)\.php(?:$|\/) {
+		# Mitigation against vulnerabilities in php-fpm, just incase
+		fastcgi_split_path_info ^(.+?\.php)(/.*)$;
+
+		# Make sure document exists
+		if (!-f $document_root$fastcgi_script_name) {
+			return 404;
+		}
+
+		# Mitigate https://httpoxy.org/ vulnerabilities
+		fastcgi_param HTTP_PROXY "";
+
+		# Pass request to php-fpm
+		fastcgi_pass unix:/run/php-fpm.sock;
+		fastcgi_index index.php;
+
+		# Include fastcgi_params settings
+		include fastcgi_params;
+
+		# php-fpm requires the SCRIPT_FILENAME to be set
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+
+		fastcgi_param REDIRECT_STATUS 200;
+
+		# Avoid sending the security headers twice
+		fastcgi_param modHeadersAvailable true;
+		# Enable pretty urls
+		fastcgi_param front_controller_active true;
+		fastcgi_intercept_errors on;
+		fastcgi_request_buffering off;
+	}
+
+	##
+	## https://docs.nextcloud.com/server/19/admin_manual/installation/nginx.html
+	##
+
+	# Add headers to serve security related headers
+	add_header Referrer-Policy "no-referrer" always;
+	add_header X-Content-Type-Options "nosniff" always;
+	add_header X-Download-Options "noopen" always;
+	add_header X-Frame-Options "SAMEORIGIN" always;
+	add_header X-Permitted-Cross-Domain-Policies "none" always;
+	add_header X-Robots-Tag "none" always;
+	add_header X-XSS-Protection "1; mode=block" always;
+
+	# Remove X-Powered-By, which is an information leak
+	fastcgi_hide_header X-Powered-By;
+
+	location ~ ^\/(?:updater|oc[ms]-provider)(?:$|\/) {
+		try_files $uri/ =404;
+		index index.php;
+	}
+
+	# Adding the cache control header for js, css and map files
+	location ~ \.(?:css|js|woff2?|svg|gif|map)$ {
+		try_files $uri /index.php$request_uri;
+		expires max;
+	}
+
+	location ~ \.(?:png|html|ttf|ico|jpg|jpeg|bcmap|mp4|webm)$ {
+		try_files $uri /index.php$request_uri;
+	}
+
+}
