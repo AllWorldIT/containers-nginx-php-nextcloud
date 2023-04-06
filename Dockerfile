@@ -57,7 +57,8 @@ RUN set -eux; \
 
 
 # NextCloud
-COPY etc/nginx/http.d/50_vhost_default.conf /etc/nginx/http.d
+COPY etc/nginx/http.d/50_vhost_default.conf.template /etc/nginx/http.d
+COPY etc/nginx/http.d/50_vhost_default-ssl-certbot.conf.template /etc/nginx/http.d
 COPY etc/cron.d/nextcloud /etc/cron.d
 COPY usr/local/sbin/nextcloud-cron /usr/local/sbin
 COPY usr/local/sbin/occ /usr/local/sbin/occ
@@ -67,7 +68,12 @@ RUN set -eux; \
 	if [ -n "$VERSION_INFO" ]; then echo "$VERSION_INFO" >> /.VERSION_INFO; fi; \
 	chown root:root \
 		/usr/local/sbin/occ \
+		/etc/nginx/http.d/50_vhost_default.conf.template \
+		/etc/nginx/http.d/50_vhost_default-ssl-certbot.conf.template \
 		/etc/cron.d/nextcloud; \
+	chmod 0644 \
+		/etc/nginx/http.d/50_vhost_default.conf.template \
+		/etc/nginx/http.d/50_vhost_default-ssl-certbot.conf.template; \
 	chmod 0755 \
 		/usr/local/sbin/occ \
 		/etc/cron.d/nextcloud; \
