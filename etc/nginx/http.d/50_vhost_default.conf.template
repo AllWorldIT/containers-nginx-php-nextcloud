@@ -23,6 +23,8 @@ server {
 	listen [::]:80 ipv6only=off default_server;
 	server_name _;
 
+@NGINX_HTTP_REDIRECT@
+
 	root /var/www/html;
 	index index.php;
 
