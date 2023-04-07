@@ -20,8 +20,8 @@
 
 
 server {
-	listen [::]:80 ipv6only=off default_server;
-	server_name _;
+	listen [::]:443 ipv6only=off ssl http2;
+	server_name @SERVER_NAME@;
 
 	root /var/www/html;
 	index index.php;
