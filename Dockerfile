@@ -19,13 +19,13 @@
 # IN THE SOFTWARE.
 
 
-FROM registry.conarx.tech/containers/nginx-php/edge
+FROM registry.conarx.tech/containers/nginx-php/3.18
 
 
 ARG VERSION_INFO=
 LABEL org.opencontainers.image.authors   "Nigel Kukard <nkukard@conarx.tech>"
-LABEL org.opencontainers.image.version   "edge"
-LABEL org.opencontainers.image.base.name "registry.conarx.tech/containers/nginx/edge"
+LABEL org.opencontainers.image.version   "3.18"
+LABEL org.opencontainers.image.base.name "registry.conarx.tech/containers/nginx/3.18"
 
 
 ENV PHP_NAME=php81
