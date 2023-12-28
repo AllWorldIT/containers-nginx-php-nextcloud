@@ -62,7 +62,7 @@ COPY etc/nginx/http.d/55_vhost_default-ssl-certbot.conf.template /etc/nginx/http
 COPY etc/cron.d/nextcloud /etc/cron.d
 COPY usr/local/sbin/nextcloud-cron /usr/local/sbin
 COPY usr/local/sbin/occ /usr/local/sbin/occ
-COPY usr/local/share/flexible-docker-containers/init.d/48_nginx_php_nextcloud.sh /usr/local/share/flexible-docker-containers/init.d
+COPY usr/local/share/flexible-docker-containers/init.d/48-nginx-php-nextcloud.sh /usr/local/share/flexible-docker-containers/init.d
 RUN set -eux; \
 	true "Flexible Docker Containers"; \
 	if [ -n "$VERSION_INFO" ]; then echo "$VERSION_INFO" >> /.VERSION_INFO; fi; \
