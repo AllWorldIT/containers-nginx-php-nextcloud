@@ -47,13 +47,13 @@ RUN set -eux; \
 
 
 # PHP-FPM config
-COPY etc/php/conf.d/30-fdc-nextcloud.ini /etc/$PHP_NAME/conf.d/30-fdc-nextcloud.ini
+COPY etc/php/conf.d/30_fdc_nextcloud.ini /etc/$PHP_NAME/conf.d/30_fdc_nextcloud.ini
 RUN set -eux; \
 	ln -s ../lib/libexec/kf5/kitinerary-extractor /usr/bin/; \
 	chown root:root \
-		/etc/$PHP_NAME/conf.d/30-fdc-nextcloud.ini; \
+		/etc/$PHP_NAME/conf.d/30_fdc_nextcloud.ini; \
 	chmod 0644 \
-		/etc/$PHP_NAME/conf.d/30-fdc-nextcloud.ini
+		/etc/$PHP_NAME/conf.d/30_fdc_nextcloud.ini
 
 
 # NextCloud

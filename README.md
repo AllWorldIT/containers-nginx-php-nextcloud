@@ -89,7 +89,7 @@ In addition to this configuration the below configuration is impleneted specific
 
 | Path                                    | Description                     |
 |-----------------------------------------|---------------------------------|
-| /etc/php/conf.d/30-fdc-nextcloud.ini    | Nextcloud PHP INI configuration |
+| /etc/php/conf.d/30_fdc_nextcloud.ini    | Nextcloud PHP INI configuration |
 | /etc/cron.d/nextcloud                   | Cron configuration (5 min)      |
 | /usr/local/bin/nextcloud-cron           | Script run by cron              |
 | /etc/nginx/http.d/50_vhost_default.conf | Default Nextcloud Nginx config  |
