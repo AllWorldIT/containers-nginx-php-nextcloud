@@ -19,13 +19,13 @@
 # IN THE SOFTWARE.
 
 
-FROM registry.conarx.tech/containers/nginx-php/3.18
+FROM registry.conarx.tech/containers/nginx-php/3.19
 
 
 ARG VERSION_INFO=
 LABEL org.opencontainers.image.authors   "Nigel Kukard <nkukard@conarx.tech>"
-LABEL org.opencontainers.image.version   "3.18"
-LABEL org.opencontainers.image.base.name "registry.conarx.tech/containers/nginx/3.18"
+LABEL org.opencontainers.image.version   "3.19"
+LABEL org.opencontainers.image.base.name "registry.conarx.tech/containers/nginx/3.19"
 
 
 ENV PHP_NAME=php81
@@ -47,13 +47,13 @@ RUN set -eux; \
 
 
 # PHP-FPM config
-COPY etc/php/conf.d/30-fdc-nextcloud.ini /etc/$PHP_NAME/conf.d/30-fdc-nextcloud.ini
+COPY etc/php/conf.d/30_fdc_nextcloud.ini /etc/$PHP_NAME/conf.d/30_fdc_nextcloud.ini
 RUN set -eux; \
 	ln -s ../lib/libexec/kf5/kitinerary-extractor /usr/bin/; \
 	chown root:root \
-		/etc/$PHP_NAME/conf.d/30-fdc-nextcloud.ini; \
+		/etc/$PHP_NAME/conf.d/30_fdc_nextcloud.ini; \
 	chmod 0644 \
-		/etc/$PHP_NAME/conf.d/30-fdc-nextcloud.ini
+		/etc/$PHP_NAME/conf.d/30_fdc_nextcloud.ini
 
 
 # NextCloud
