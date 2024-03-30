@@ -31,7 +31,7 @@ fi
 cd /var/www/html
 
 # Run cron
-su -s "/usr/bin/$PHP_NAME" www-data cron.php
+su -s /usr/bin/php www-data cron.php
 
 # Send activity emails
 /usr/local/sbin/occ activity:send-mails
