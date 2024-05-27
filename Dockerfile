@@ -28,7 +28,7 @@ LABEL org.opencontainers.image.version   "3.19"
 LABEL org.opencontainers.image.base.name "registry.conarx.tech/containers/nginx/3.19"
 
 
-ENV PHP_NAME=php81
+ENV PHP_NAME=php82
 
 
 RUN set -eux; \
